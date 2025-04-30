@@ -51,7 +51,11 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="main-container">
+    <div class="ad-wrapper">
+      <div id="ad-top"></div>
+      <div class="game-layout">
+        <div id="ad-left"></div>
+        <div class="main-container">
       <header>
         <h1>Snake Game Online</h1>
         <p class="game-description">
@@ -78,9 +82,17 @@
         <p>&copy; 2025 Daniyal. All rights reserved.</p>
       </footer>
       <script src="game.js" defer></script>
+      </div>
+      <div id="ad-right"></div>
     </div>
-    <!-- Ad Script from ProfitablerateCPM -->
+    <div id="ad-bottom"></div>
     <script async="async" data-cfasync="false" src="//pl26522992.profitableratecpm.com/22080c390d9d4b4b55927f975a08d1b0/invoke.js"></script>
-    <div id="container-22080c390d9d4b4b55927f975a08d1b0"></div>
+    <script>
+      const adHTML = `<div id='container-22080c390d9d4b4b55927f975a08d1b0'></div>`;
+      document.getElementById("ad-top").innerHTML = adHTML;
+      document.getElementById("ad-bottom").innerHTML = adHTML;
+      document.getElementById("ad-left").innerHTML = adHTML;
+      document.getElementById("ad-right").innerHTML = adHTML;
+    </script>
   </body>
 </html>

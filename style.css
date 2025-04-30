@@ -168,3 +168,44 @@ footer a {
     display: flex;
   }
 }
+
+/* Ad Wrapper and Responsive Ad Placement */
+.ad-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-layout {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+}
+
+#ad-left, #ad-right {
+  width: 120px;
+  min-height: 600px;
+  display: none;
+}
+
+#ad-top, #ad-bottom {
+  width: 100%;
+  height: 90px;
+  margin: 10px 0;
+  display: none;
+}
+
+/* Desktop View */
+@media (min-width: 768px) {
+  #ad-left, #ad-right {
+    display: block;
+  }
+}
+
+/* Mobile View */
+@media (max-width: 767px) {
+  #ad-top, #ad-bottom {
+    display: block;
+  }
+}
