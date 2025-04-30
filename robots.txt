@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://Daniyal0100101.github.io/Snake-game-online/sitemap.xml
