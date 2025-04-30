@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+    <link rel="manifest" href="images/site.webmanifest" />
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>
+      Play Snake Game Online | Classic & Modern Snake for PC and Mobile
+    </title>
+    <meta
+      name="description"
+      content="Play the classic Snake Game online for free! Enjoy a modern, mobile-friendly version of Snake with touch and keyboard controls. Challenge your high score!"
+    />
+    <meta
+      name="keywords"
+      content="snake game, play snake, online snake, classic snake, mobile snake game, free games, arcade"
+    />
+    <meta name="robots" content="index, follow" />
+    <meta
+      property="og:title"
+      content="Play Snake Game Online | Classic & Modern Snake for PC and Mobile"
+    />
+    <meta
+      property="og:description"
+      content="Play the classic Snake Game online for free! Enjoy a modern, mobile-friendly version of Snake with touch and keyboard controls. Challenge your high score!"
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Play Snake Game Online" />
+    <meta
+      name="twitter:description"
+      content="Enjoy a modern, mobile-friendly Snake Game. Play now on any device!"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "Snake Game Online",
+        "description": "Play the classic Snake Game online for free! Modern, mobile-friendly, and fun.",
+        "applicationCategory": "Game",
+        "operatingSystem": "All",
+        "author": {
+          "@type": "Person",
+          "name": "Daniyal"
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="main-container">
+      <header>
+        <h1>Snake Game Online</h1>
+        <p class="game-description">
+          Play the classic Snake Game in your browser! Works great on PC and
+          mobile. Use your keyboard or touch controls to guide the snake, eat
+          food, and challenge your high score.
+        </p>
+      </header>
+      <main>
+        <canvas
+          id="gameCanvas"
+          tabindex="0"
+          aria-label="Snake Game"
+          role="application"
+        ></canvas>
+        <div id="mobile-controls" aria-hidden="true">
+          <button data-dir="up" aria-label="Up">▲</button>
+          <button data-dir="left" aria-label="Left">◀</button>
+          <button data-dir="down" aria-label="Down">▼</button>
+          <button data-dir="right" aria-label="Right">▶</button>
+        </div>
+      </main>
+      <footer>
+        <p>&copy; 2025 Daniyal. All rights reserved.</p>
+      </footer>
+      <script src="game.js" defer></script>
+    </div>
+  </body>
+</html>
