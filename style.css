@@ -169,38 +169,6 @@ footer a {
   }
 }
 
-/* Ad container box with close button */
-.ad-box {
-  position: relative;
-  overflow: hidden;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-
-.ad-close {
-  position: absolute;
-  top: 4px;
-  right: 8px;
-  background: #222;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  font-size: 1.2rem;
-  cursor: pointer;
-  z-index: 10;
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
-.ad-close:hover {
-  opacity: 1;
-}
-
 /* Responsive Ad Placement Layout */
 .ad-responsive-wrapper {
   display: flex;
@@ -311,4 +279,31 @@ footer a {
   html, body {
     overflow: visible;
   }
+}
+
+/* Ad Slot and Close Button */
+.ad-slot {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.ad-slot .ad-close {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 1000;
+}
+.ad-slot .ad-close:hover {
+  background: rgba(0,0,0,0.8);
 }
