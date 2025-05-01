@@ -52,6 +52,11 @@
       name="google-site-verification"
       content="tPum2DaLPvIvu6_7gpUI0iyZxl5S2_Sa68DS_hidA6Q"
     />
+    <link rel="canonical" href="https://daniyal0100101.github.io/Snake-game-online/" />
+    <meta name="theme-color" content="#232329" />
+    <meta name="author" content="Daniyal" />
+    <link rel="preconnect" href="https://pl26522992.profitableratecpm.com" />
+    <link rel="preload" as="script" href="game.js" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -59,12 +64,27 @@
       <header>
         <h1>Snake Game Online</h1>
         <p class="game-description">
-          Play the classic Snake Game in your browser! Works great on PC and
-          mobile. Use your keyboard or touch controls to guide the snake, eat
-          food, and challenge your high score.
+          Play the classic Snake Game in your browser! Works great on PC and mobile. Use your keyboard or touch controls to guide the snake, eat food, and challenge your high score.
         </p>
       </header>
       <main>
+        <section aria-labelledby="how-to-play">
+          <h2 id="how-to-play">How to Play</h2>
+          <ul>
+            <li>Use <strong>arrow keys</strong> (desktop) or <strong>touch controls</strong> (mobile) to move the snake.</li>
+            <li>Eat the food to grow longer and increase your score.</li>
+            <li>Don’t run into yourself or the wall!</li>
+          </ul>
+        </section>
+        <section aria-labelledby="features">
+          <h2 id="features">Features</h2>
+          <ul>
+            <li>Classic and modern gameplay</li>
+            <li>Mobile and desktop friendly</li>
+            <li>Fast loading and highly responsive</li>
+            <li>Accessible and SEO-optimized</li>
+          </ul>
+        </section>
         <canvas
           id="gameCanvas"
           tabindex="0"
@@ -82,6 +102,32 @@
         <p>&copy; 2025 Daniyal. All rights reserved.</p>
       </footer>
       <script src="game.js" defer></script>
+      <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "How to play Snake Game Online",
+        "step": [
+          {"@type": "HowToStep", "text": "Use arrow keys or touch controls to move the snake."},
+          {"@type": "HowToStep", "text": "Eat the food to grow longer."},
+          {"@type": "HowToStep", "text": "Avoid running into walls or yourself."}
+        ]
+      }
+      </script>
+      <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "Snake Game Online",
+        "description": "Play the classic Snake Game online for free! Modern, mobile-friendly, and fun.",
+        "applicationCategory": "Game",
+        "operatingSystem": "All",
+        "author": {
+          "@type": "Person",
+          "name": "Daniyal"
+        }
+      }
+      </script>
     </div>
     <div class="ad-container">
       <button class="ad-close" onclick="document.querySelector('.ad-container').style.display='none'">✕</button>
