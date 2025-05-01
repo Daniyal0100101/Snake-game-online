@@ -74,15 +74,9 @@
   </head>
   <body>
     <div class="ad-responsive-wrapper">
-      <div class="ad-slot" id="ad-top">
-        <button class="ad-close" onclick="this.parentElement.style.display='none'">✕</button>
-        <div id="container-ad-top"></div>
-      </div>
+      <div id="ad-top" class="ad-box"><button class="ad-close" onclick="this.parentElement.style.display='none'">✕</button></div>
       <div class="ad-main-row">
-        <div class="ad-slot" id="ad-left">
-          <button class="ad-close" onclick="this.parentElement.style.display='none'">✕</button>
-          <div id="container-ad-left"></div>
-        </div>
+        <div id="ad-left" class="ad-box"><button class="ad-close" onclick="this.parentElement.style.display='none'">✕</button></div>
         <div class="main-container">
       <header>
         <h1>Snake Game Online</h1>
@@ -111,30 +105,16 @@
       </footer>
       <script src="game.js" defer></script>
       </div>
-      <div class="ad-slot" id="ad-right">
-        <button class="ad-close" onclick="this.parentElement.style.display='none'">✕</button>
-        <div id="container-ad-right"></div>
-      </div>
+      <div id="ad-right" class="ad-box"><button class="ad-close" onclick="this.parentElement.style.display='none'">✕</button></div>
     </div>
-    <div class="ad-slot" id="ad-bottom">
-      <button class="ad-close" onclick="this.parentElement.style.display='none'">✕</button>
-      <div id="container-ad-bottom"></div>
-    </div>
+    <div id="ad-bottom" class="ad-box"><button class="ad-close" onclick="this.parentElement.style.display='none'">✕</button></div>
+    <script async="async" data-cfasync="false" src="//pl26522992.profitableratecpm.com/22080c390d9d4b4b55927f975a08d1b0/invoke.js"></script>
     <script>
-      function loadAdScript(containerId) {
-        var script = document.createElement('script');
-        script.async = true;
-        script.setAttribute('data-cfasync', 'false');
-        script.src = "//pl26522992.profitableratecpm.com/22080c390d9d4b4b55927f975a08d1b0/invoke.js";
-        document.getElementById(containerId).appendChild(script);
-      }
-      if (window.innerWidth >= 992) {
-        loadAdScript('container-ad-left');
-        loadAdScript('container-ad-right');
-      } else {
-        loadAdScript('container-ad-top');
-        loadAdScript('container-ad-bottom');
-      }
+      const adHTML = `<div id='container-22080c390d9d4b4b55927f975a08d1b0'></div>`;
+      document.getElementById("ad-top").innerHTML = adHTML;
+      document.getElementById("ad-bottom").innerHTML = adHTML;
+      document.getElementById("ad-left").innerHTML = adHTML;
+      document.getElementById("ad-right").innerHTML = adHTML;
     </script>
   </body>
 </html>
