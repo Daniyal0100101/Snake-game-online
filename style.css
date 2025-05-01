@@ -1,8 +1,19 @@
+:root {
+  --primary-color: #4caf50;
+  --secondary-color: #333;
+  --tertiary-color: #111;
+  --quaternary-color: #34384a;
+  --quinary-color: #222;
+  --senary-color: #fff;
+  --septenary-color: #ddd;
+  --octonary-color: #aaa;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
-  background: #34384a;
+  background: var(--quaternary-color);
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -10,7 +21,7 @@ body {
 }
 
 .main-container {
-  background: #232329ee;
+  background: var(--tertiary-color);
   margin: 16px auto 0 auto;
   border-radius: 18px;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
@@ -41,7 +52,7 @@ body {
 
 canvas {
   display: block;
-  background: #111;
+  background: var(--tertiary-color);
   border-radius: 14px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   margin: 0 auto 8px auto;
@@ -56,7 +67,7 @@ canvas {
 }
 
 canvas:focus {
-  box-shadow: 0 0 0 3px #4caf50, 0 8px 32px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 0 3px var(--primary-color), 0 8px 32px rgba(0, 0, 0, 0.25);
   outline: none;
 }
 
@@ -90,7 +101,7 @@ header {
 }
 
 h1 {
-  color: #4caf50;
+  color: var(--primary-color);
   font-size: 2.2rem;
   margin-bottom: 0.2em;
   letter-spacing: 0.03em;
@@ -106,7 +117,7 @@ h1 {
 }
 
 .game-description {
-  color: #ddd;
+  color: var(--septenary-color);
   font-size: 1.13rem;
   margin-bottom: 14px;
   text-align: center;
@@ -123,13 +134,13 @@ h1 {
 
 footer {
   text-align: center;
-  color: #aaa;
+  color: var(--octonary-color);
   font-size: 0.95rem;
   margin: 20px 0 12px 0;
 }
 
 footer a {
-  color: #4caf50;
+  color: var(--primary-color);
   text-decoration: underline;
 }
 
@@ -150,8 +161,8 @@ footer a {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: #333;
-  color: #fff;
+  background: var(--secondary-color);
+  color: var(--senary-color);
   border: none;
   font-size: 2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -160,7 +171,7 @@ footer a {
 }
 
 #mobile-controls button:active {
-  background: #555;
+  background: var(--quinary-color);
 }
 
 @media (hover: none) and (pointer: coarse) {
@@ -179,7 +190,7 @@ footer a {
   bottom: 0;
   left: 0;
   z-index: 1000;
-  background: #111;
+  background: var(--tertiary-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -199,8 +210,8 @@ footer a {
   position: absolute;
   top: 2px;
   right: 8px;
-  background: #222;
-  color: #fff;
+  background: var(--quinary-color);
+  color: var(--senary-color);
   border: none;
   border-radius: 50%;
   width: 28px;
@@ -253,11 +264,5 @@ footer a {
 @media (max-width: 767px) {
   #ad-top, #ad-bottom {
     display: block;
-  }
-}
-
-@media (min-width: 768px) {
-  html, body {
-    overflow: visible;
   }
 }
