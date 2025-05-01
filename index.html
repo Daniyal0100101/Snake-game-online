@@ -121,20 +121,45 @@
       <div id="container-ad-bottom"></div>
     </div>
     <script>
-      function loadAdScript(containerId) {
-        var script = document.createElement('script');
-        script.async = true;
-        script.setAttribute('data-cfasync', 'false');
-        script.src = "//pl26522992.profitableratecpm.com/22080c390d9d4b4b55927f975a08d1b0/invoke.js";
-        document.getElementById(containerId).appendChild(script);
-      }
-      if (window.innerWidth >= 992) {
-        loadAdScript('container-ad-left');
-        loadAdScript('container-ad-right');
-      } else {
-        loadAdScript('container-ad-top');
-        loadAdScript('container-ad-bottom');
-      }
-    </script>
+function loadAdScript(containerId) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  // Prevent duplicate scripts
+  if (container.querySelector('script[data-ad-loaded]')) return;
+  var script = document.createElement('script');
+  script.async = true;
+  script.setAttribute('data-cfasync', 'false');
+  script.setAttribute('data-ad-loaded', 'true');
+  script.src = "//pl26522992.profitableratecpm.com/22080c390d9d4b4b55927f975a08d1b0/invoke.js";
+  script.onerror = function() {
+    container.innerHTML = '<div class="ad-fallback">Ad could not be loaded. Please disable adblocker and reload.</div>';
+  };
+  container.appendChild(script);
+}
+
+function showAdsForDevice() {
+  // Remove any old ad scripts/fallbacks
+  ['container-ad-left','container-ad-right','container-ad-top','container-ad-bottom'].forEach(function(id) {
+    var c = document.getElementById(id);
+    if (c) {
+      c.innerHTML = '';
+    }
+  });
+  if (window.innerWidth >= 992) {
+    loadAdScript('container-ad-left');
+    loadAdScript('container-ad-right');
+  } else {
+    loadAdScript('container-ad-top');
+    loadAdScript('container-ad-bottom');
+  }
+}
+
+showAdsForDevice();
+window.addEventListener('resize', function() {
+  // Debounce to avoid rapid reloads
+  clearTimeout(window._adResizeTimeout);
+  window._adResizeTimeout = setTimeout(showAdsForDevice, 300);
+});
+</script>
   </body>
 </html>
