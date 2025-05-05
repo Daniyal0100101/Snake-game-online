@@ -1,86 +1,110 @@
+/*****************************************************
+ *  S N A K E  G A M E 
+ *****************************************************/
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-const gridSize = 20;
+const gridSize = 20; // one logical tile (px)
+
+/* -------------------------------------------------- */
+/*  Global state                                      */
 let tileCountX, tileCountY;
 let snake, velocity, food, score, highScore, gameSpeed;
-let isGameOver = false;
-let paused = false;
+let isGameOver = false,
+  paused = false;
+
 let lastTapTime = 0;
 let lastTime = 0,
   accumulator = 0;
 let touchStartX = null,
   touchStartY = null;
 let animationTime = 0;
-let scoreOpacity = 0,
-  scoreScale = 1;
 
+/* -------------------------------------------------- */
+/*  Hi‑DPI, ad‑aware resize                           */
 function resizeCanvas() {
-  // Make canvas always square and centered, max 90vmin
-  const size = Math.min(window.innerWidth, window.innerHeight) * 0.9;
-  canvas.width = size;
-  canvas.height = size;
-  tileCountX = Math.floor(canvas.width / gridSize);
-  tileCountY = Math.floor(canvas.height / gridSize);
+  const ad = document.querySelector(".ad-container");
+  const adH = ad ? ad.offsetHeight : 0;
+  const margin = 16; // visual breathing room
+
+  const logical = Math.min(
+    window.innerWidth - margin * 2,
+    window.innerHeight - adH - margin * 2
+  );
+
+  /* device‑pixel ratio for crispness on Retina / 4K */
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.style.width = `${logical}px`; // CSS pixels
+  canvas.style.height = `${logical}px`;
+
+  canvas.width = logical * dpr; // real framebuffer px
+  canvas.height = logical * dpr;
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // scale once
+  ctx.imageSmoothingEnabled = false;
+
+  tileCountX = Math.floor(logical / gridSize);
+  tileCountY = Math.floor(logical / gridSize);
 }
 window.addEventListener("resize", resizeCanvas);
+window.addEventListener("orientationchange", resizeCanvas);
 resizeCanvas();
 
-// Load high score
+/* -------------------------------------------------- */
+/*  Persisted high‑score + tiny “beep” on new record  */
 highScore = parseInt(localStorage.getItem("snakeHighScore")) || 0;
 
-// Beep sound for new high score
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playBeep() {
-  const oscillator = audioCtx.createOscillator();
-  const gainNode = audioCtx.createGain();
-  oscillator.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
-  oscillator.type = "sine";
-  oscillator.frequency.value = 800;
-  gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-  oscillator.start();
-  gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-  oscillator.stop(audioCtx.currentTime + 0.3);
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.type = "sine";
+  osc.frequency.value = 800;
+  gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+  osc.start();
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+  osc.stop(audioCtx.currentTime + 0.3);
 }
 
+/* -------------------------------------------------- */
+/*  Game‑state helpers                                */
 function initGame() {
   snake = [{ x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }];
   velocity = { x: 0, y: 0 };
   score = 0;
-  gameSpeed = 160;
+  gameSpeed = 160; // ms per update (speeds up)
   food = spawnFood();
   isGameOver = false;
   paused = false;
   lastTime = performance.now();
   accumulator = 0;
-  scoreOpacity = 0;
   requestAnimationFrame(gameLoop);
 }
 
 function spawnFood() {
-  let valid = false,
-    newFood;
-  while (!valid) {
-    newFood = {
+  let pos;
+  do {
+    pos = {
       x: Math.floor(Math.random() * tileCountX),
       y: Math.floor(Math.random() * tileCountY),
     };
-    valid = !snake.some((part) => part.x === newFood.x && part.y === newFood.y);
-  }
-  return newFood;
+  } while (snake.some((s) => s.x === pos.x && s.y === pos.y));
+  return pos;
 }
 
 function updateGame() {
-  if (velocity.x === 0 && velocity.y === 0) return;
+  if (velocity.x === 0 && velocity.y === 0) return; // still waiting for first move
+
   const newHead = {
-    x: snake[0].x + velocity.x,
-    y: snake[0].y + velocity.y,
+    x: (snake[0].x + velocity.x + tileCountX) % tileCountX,
+    y: (snake[0].y + velocity.y + tileCountY) % tileCountY,
   };
-  if (newHead.x < 0) newHead.x = tileCountX - 1;
-  if (newHead.x >= tileCountX) newHead.x = 0;
-  if (newHead.y < 0) newHead.y = tileCountY - 1;
-  if (newHead.y >= tileCountY) newHead.y = 0;
-  if (snake.some((part) => part.x === newHead.x && part.y === newHead.y)) {
+
+  /* self‑collision */
+  if (snake.some((p) => p.x === newHead.x && p.y === newHead.y)) {
     isGameOver = true;
     if (score > highScore) {
       highScore = score;
@@ -89,173 +113,213 @@ function updateGame() {
     }
     return;
   }
+
   snake.unshift(newHead);
+
   if (newHead.x === food.x && newHead.y === food.y) {
     score++;
-    scoreScale = 1.2;
     food = spawnFood();
-    gameSpeed = Math.max(50, gameSpeed - 2);
+    gameSpeed = Math.max(50, gameSpeed - 2); // speed‑up cap
   } else {
     snake.pop();
   }
 }
 
+/* -------------------------------------------------- */
+/*  Rendering                                         */
 function drawGame() {
   ctx.fillStyle = "#111";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  // Animate food
-  const foodX = food.x * gridSize + gridSize / 2;
-  const foodY = food.y * gridSize + gridSize / 2;
-  ctx.save();
-  ctx.translate(foodX, foodY);
-  ctx.rotate(Math.sin(animationTime / 200) * 0.1);
+
+  /* ---- FOOD : “gem” with radial gradient ---- */
+  const foodPx = food.x * gridSize;
+  const foodPy = food.y * gridSize;
+  const fg = ctx.createRadialGradient(
+    foodPx + gridSize * 0.4,
+    foodPy + gridSize * 0.4,
+    gridSize * 0.1,
+    foodPx + gridSize * 0.4,
+    foodPy + gridSize * 0.4,
+    gridSize * 0.6
+  );
+  fg.addColorStop(0, "#ff6666");
+  fg.addColorStop(1, "#c00");
+  ctx.fillStyle = fg;
+  ctx.shadowColor = "#ffaaaa";
+  ctx.shadowBlur = 12;
   ctx.beginPath();
   ctx.arc(
-    0,
-    0,
-    (gridSize / 2) * (1 + 0.1 * Math.sin(animationTime / 150)),
+    foodPx + gridSize / 2,
+    foodPy + gridSize / 2,
+    gridSize * 0.45,
     0,
     2 * Math.PI
   );
-  ctx.fillStyle = "#e74c3c";
-  ctx.shadowColor = "#ffaaaa";
-  ctx.shadowBlur = 10;
   ctx.fill();
-  ctx.restore();
-  // Draw snake
+  ctx.shadowBlur = 0;
+
+  /* ---- SNAKE : glossy rounded tiles ---- */
   for (let i = 0; i < snake.length; i++) {
-    ctx.save();
-    ctx.globalAlpha = 0.8 + 0.2 * (i / snake.length);
-    ctx.fillStyle = i === 0 ? "#3c6" : "#6c6";
-    ctx.shadowColor = i === 0 ? "#aaffaa" : "#333";
+    const { x, y } = snake[i];
+    const px = x * gridSize;
+    const py = y * gridSize;
+
+    const grad = ctx.createLinearGradient(px, py, px, py + gridSize);
+    if (i === 0) {
+      grad.addColorStop(0, "#4eff9f");
+      grad.addColorStop(1, "#1f8f4d");
+    } else {
+      grad.addColorStop(0, "#3ac978");
+      grad.addColorStop(1, "#166b38");
+    }
+
+    ctx.fillStyle = grad;
+    ctx.shadowColor = i === 0 ? "#8affc8" : "transparent";
     ctx.shadowBlur = i === 0 ? 8 : 0;
-    ctx.fillRect(
-      snake[i].x * gridSize,
-      snake[i].y * gridSize,
-      gridSize,
-      gridSize
+
+    const r = gridSize * 0.2;
+    ctx.beginPath();
+    ctx.moveTo(px + r, py);
+    ctx.lineTo(px + gridSize - r, py);
+    ctx.quadraticCurveTo(px + gridSize, py, px + gridSize, py + r);
+    ctx.lineTo(px + gridSize, py + gridSize - r);
+    ctx.quadraticCurveTo(
+      px + gridSize,
+      py + gridSize,
+      px + gridSize - r,
+      py + gridSize
     );
-    ctx.restore();
+    ctx.lineTo(px + r, py + gridSize);
+    ctx.quadraticCurveTo(px, py + gridSize, px, py + gridSize - r);
+    ctx.lineTo(px, py + r);
+    ctx.quadraticCurveTo(px, py, px + r, py);
+    ctx.fill();
   }
-  // Score display
-  let scoreText = `Score: ${score}`;
+  ctx.shadowBlur = 0;
+
+  /* ---- Score ---- */
   ctx.font = "bold 28px Arial";
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  ctx.save();
-  ctx.globalAlpha = 0.8;
+  ctx.globalAlpha = 0.85;
   ctx.fillStyle = "#fff";
-  ctx.fillText(scoreText, 18, 10);
+  ctx.fillText(`Score: ${score}`, 18, 10);
   ctx.font = "16px Arial";
   ctx.fillStyle = "#aaa";
   ctx.fillText(`High: ${highScore}`, 18, 38);
-  ctx.restore();
-  // Paused overlay
-  if (paused) {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+  ctx.globalAlpha = 1;
+
+  /* ---- Overlays ---- */
+  if (paused || isGameOver) {
+    ctx.fillStyle = "rgba(0,0,0,0.72)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#fff";
-    ctx.font = "48px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("Paused", canvas.width / 2, canvas.height / 2 - 20);
-    ctx.font = "24px Arial";
-    ctx.fillText(
-      "Double-tap or press P",
-      canvas.width / 2,
-      canvas.height / 2 + 20
-    );
+    if (paused) {
+      ctx.font = "48px Arial";
+      ctx.fillText("Paused", canvas.width / 2, canvas.height / 2 - 20);
+      ctx.font = "24px Arial";
+      ctx.fillText(
+        "Double‑tap or press P",
+        canvas.width / 2,
+        canvas.height / 2 + 20
+      );
+    } else {
+      ctx.font = "48px Arial";
+      ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 40);
+      ctx.font = "24px Arial";
+      ctx.fillText(
+        `Final Score: ${score}`,
+        canvas.width / 2,
+        canvas.height / 2
+      );
+      ctx.fillText(
+        `High Score: ${highScore}`,
+        canvas.width / 2,
+        canvas.height / 2 + 30
+      );
+      ctx.fillText(
+        "Tap or press Enter to Restart",
+        canvas.width / 2,
+        canvas.height / 2 + 70
+      );
+    }
   }
-  // Game over overlay
-  if (isGameOver) {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#fff";
-    ctx.font = "48px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 40);
-    ctx.font = "24px Arial";
-    ctx.fillText(`Final Score: ${score}`, canvas.width / 2, canvas.height / 2);
-    ctx.fillText(
-      `High Score: ${highScore}`,
-      canvas.width / 2,
-      canvas.height / 2 + 30
-    );
-    ctx.fillText(
-      "Tap or press Enter to Restart",
-      canvas.width / 2,
-      canvas.height / 2 + 70
-    );
-  }
-  ctx.textAlign = "start";
 }
 
-function gameLoop(currentTime) {
+/* -------------------------------------------------- */
+/*  Main loop                                         */
+function gameLoop(time) {
   if (paused) {
-    lastTime = currentTime;
+    lastTime = time;
     requestAnimationFrame(gameLoop);
     return;
   }
-  const deltaTime = currentTime - lastTime;
-  lastTime = currentTime;
-  accumulator += deltaTime;
-  animationTime += deltaTime;
+
+  const delta = time - lastTime;
+  lastTime = time;
+  accumulator += delta;
+  animationTime += delta;
+
   while (accumulator > gameSpeed && !isGameOver) {
     updateGame();
     accumulator -= gameSpeed;
   }
+
   drawGame();
   if (!isGameOver) requestAnimationFrame(gameLoop);
 }
 
-// Touch controls
-canvas.addEventListener("touchstart", function (e) {
+/* -------------------------------------------------- */
+/*  Touch input                                       */
+canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
   touchStartX = e.touches[0].clientX;
   touchStartY = e.touches[0].clientY;
 });
-canvas.addEventListener("touchend", function (e) {
+canvas.addEventListener("touchend", (e) => {
   e.preventDefault();
-  const touchEndX = e.changedTouches[0].clientX;
-  const touchEndY = e.changedTouches[0].clientY;
-  const diffX = touchEndX - touchStartX;
-  const diffY = touchEndY - touchStartY;
-  if (Math.abs(diffX) < 10 && Math.abs(diffY) < 10) {
-    if (isGameOver) {
-      initGame();
-    } else {
-      const currentTime = Date.now();
-      if (currentTime - lastTapTime < 300) {
-        paused = !paused;
-      }
-      lastTapTime = currentTime;
+  const endX = e.changedTouches[0].clientX;
+  const endY = e.changedTouches[0].clientY;
+  const dx = endX - touchStartX;
+  const dy = endY - touchStartY;
+
+  if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+    // simple tap
+    if (isGameOver) initGame();
+    else {
+      const t = Date.now();
+      if (t - lastTapTime < 300) paused = !paused;
+      lastTapTime = t;
     }
   } else if (!isGameOver && !paused) {
-    if (Math.abs(diffX) > Math.abs(diffY)) {
-      if (diffX > 0 && velocity.x !== -1) velocity = { x: 1, y: 0 };
-      else if (diffX < 0 && velocity.x !== 1) velocity = { x: -1, y: 0 };
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 0 && velocity.x !== -1) velocity = { x: 1, y: 0 };
+      else if (dx < 0 && velocity.x !== 1) velocity = { x: -1, y: 0 };
     } else {
-      if (diffY > 0 && velocity.y !== -1) velocity = { x: 0, y: 1 };
-      else if (diffY < 0 && velocity.y !== 1) velocity = { x: 0, y: -1 };
+      if (dy > 0 && velocity.y !== -1) velocity = { x: 0, y: 1 };
+      else if (dy < 0 && velocity.y !== 1) velocity = { x: 0, y: -1 };
     }
   }
 });
 
-// Mobile on-screen controls
+/* -------------------------------------------------- */
+/*  On‑screen buttons (mobile d‑pad)                  */
 const mobileControls = document.getElementById("mobile-controls");
 if (mobileControls) {
-  mobileControls.addEventListener("click", function (e) {
-    if (e.target.tagName === "BUTTON") {
-      const dir = e.target.dataset.dir;
-      if (dir === "up" && velocity.y !== 1) velocity = { x: 0, y: -1 };
-      if (dir === "down" && velocity.y !== -1) velocity = { x: 0, y: 1 };
-      if (dir === "left" && velocity.x !== 1) velocity = { x: -1, y: 0 };
-      if (dir === "right" && velocity.x !== -1) velocity = { x: 1, y: 0 };
-    }
+  mobileControls.addEventListener("click", (e) => {
+    if (e.target.tagName !== "BUTTON") return;
+    const dir = e.target.dataset.dir;
+    if (dir === "up" && velocity.y !== 1) velocity = { x: 0, y: -1 };
+    if (dir === "down" && velocity.y !== -1) velocity = { x: 0, y: 1 };
+    if (dir === "left" && velocity.x !== 1) velocity = { x: -1, y: 0 };
+    if (dir === "right" && velocity.x !== -1) velocity = { x: 1, y: 0 };
   });
 }
 
-// Keyboard support
-window.addEventListener("keydown", function (e) {
+/* -------------------------------------------------- */
+/*  Keyboard                                          */
+window.addEventListener("keydown", (e) => {
   if (isGameOver) {
     if (e.key === "Enter") initGame();
     return;
@@ -265,6 +329,7 @@ window.addEventListener("keydown", function (e) {
     return;
   }
   if (paused) return;
+
   switch (e.key) {
     case "ArrowUp":
     case "w":
@@ -288,4 +353,6 @@ window.addEventListener("keydown", function (e) {
   }
 });
 
+/* -------------------------------------------------- */
+/*  Kick‑off                                          */
 initGame();
