@@ -40,7 +40,7 @@ body {
   border-radius: 18px;
   box-shadow: var(--shadow-medium);
   max-width: 700px;
-  padding: 10px 8px 120px 8px;          /* extra bottom space for ad */
+  padding: 10px 8px 120px 8px; /* extra bottom space for ad */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -64,7 +64,7 @@ canvas {
   width: 100%;
   max-width: 100%;
   height: auto;
-  max-height: calc(70vh - 110px);       /* leave room for ad bar */
+  max-height: calc(70vh - 110px); /* leave room for ad bar */
   touch-action: none;
   cursor: pointer;
   transition: box-shadow 0.3s;
@@ -123,12 +123,12 @@ footer {
 }
 
 @media (max-width: 700px) {
-  h1 { 
-    font-size: 1.8rem; 
+  h1 {
+    font-size: 1.8rem;
   }
-  
-  .game-description { 
-    font-size: 0.95rem; 
+
+  .game-description {
+    font-size: 0.95rem;
     margin-bottom: 10px;
     padding: 0 10px;
   }
@@ -141,6 +141,16 @@ footer {
   left: 0;
   right: 0;
   bottom: 120px;
+  z-index: 10;
+  justify-content: center;
+  gap: 15px;
+  pointer-events: none;
+}
+
+#mobile-controls {
+  display: none;
+  position: relative;
+  margin-top: 10px;
   z-index: 10;
   justify-content: center;
   gap: 15px;
@@ -161,13 +171,42 @@ footer {
   opacity: 0.95;
 }
 
-#mobile-controls button:active { 
+#mobile-controls {
+  position: relative;
+  margin-top: 20px;
+  bottom: auto;
+  order: 3;
+}
+
+@media (max-width: 600px) {
+  #mobile-controls button {
+    width: 50px;
+    height: 50px;
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  #mobile-controls button {
+    width: 45px;
+    height: 45px;
+    font-size: 1.6rem;
+  }
+  
+  #mobile-controls {
+    gap: 10px;
+  }
+}
+
+#mobile-controls button:active {
   background: var(--quinary-color);
   transform: scale(0.95);
 }
 
 @media (hover: none) and (pointer: coarse) {
-  #mobile-controls { display: flex; }
+  #mobile-controls {
+    display: flex;
+  }
 }
 
 /* ---------- Bottom ad bar ---------- */
@@ -213,8 +252,8 @@ footer {
   transition: opacity 0.2s;
 }
 
-.ad-close:hover { 
-  opacity: 1; 
+.ad-close:hover {
+  opacity: 1;
 }
 
 /* ---------- Game status overlays ---------- */
@@ -244,14 +283,26 @@ footer {
 
 /* ---------- Animations ---------- */
 @keyframes scoreFloat {
-  0% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-30px); }
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .pulse {
